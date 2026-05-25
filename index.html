@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengumuman Kelulusan SMP</title>
+    <style>
+        /* Gaya Tampilan (CSS) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .header {
+            background-color: #1e3a8a;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+        }
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            color: #111827;
+        }
+        .deskripsi {
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .form-grup {
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            text-align: center;
+            letter-spacing: 2px;
+            transition: border-color 0.2s;
+        }
+        input[type="number"]:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        .hasil-box {
+            display: none;
+            margin-top: 30px;
+            border-top: 2px solid #f3f4f6;
+            padding-top: 20px;
+        }
+        .status {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .lulus {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .tidak-lulus {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 15px;
+        }
+        table td:last-child {
+            text-align: right;
+            font-weight: bold;
+            color: #111827;
+        }
+        .judul-tabel {
+            font-weight: bold;
+            color: #4b5563;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 5px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .error-pesan {
+            display: none;
+            color: #b91c1c;
+            background-color: #ffeeee;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 20px;
+            border: 1px solid #fca5a5;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 style="margin:0; font-size: 24px;">SMP NEGERI 1 NUSANTARA</h1>
+        <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">Pengumuman Kelulusan Kelas IX Tahun Ajaran 2025/2026</p>
+    </div>
+
+    <div class="container">
+        <h2>Cek Kelulusan Siswa</h2>
+        <p class="deskripsi">Masukkan 10 digit NISN resmi untuk melihat status kelulusan Anda.</p>
+        
+        <div class="form-grup">
+            <input type="number" id="nisnInput" placeholder="Masukkan NISN Anda">
+        </div>
+        <button onclick="periksaKelulusan()">Periksa Hasil</button>
+
+        <div id="boxHasil" class="hasil-box">
+            <div id="statusKelulusan" class="status"></div>
+            
+            <div class="judul-tabel">Identitas Peserta Didik</div>
+            <table>
+                <tr><td>Nama Lengkap</td><td id="txtNama"></td></tr>
+                <tr><td>NISN</td><td id="txtNisn"></td></tr>
+            </table>
+        </div>
+
+        <div id="boxError" class="error-pesan">
+            Maaf, nomor NISN tidak ditemukan. Pastikan angka yang dimasukkan sudah benar atau hubungi pihak sekolah.
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 SMP Negeri 1 Nusantara. All Rights Reserved.
+    </div>
+
+    <script>
+        /* DATA SISWA 
+          Silakan edit, tambah, atau hapus baris di bawah sesuai data sekolah.
+          Format nilai ujian sudah dihapus, cukup isi NISN, Nama, dan Status.
+        */
+        const databaseSiswa = [
+            { nisn: "0011223344", nama: "Ahmad Rifai", status: "LULUS" },
+            { nisn: "0055667788", nama: "Siti Rahmawati", status: "LULUS" },
+            { nisn: "0099887766", nama: "Doni Setiawan", status: "DITUNDA" }
+        ];
+
+        // LOGIKA PENCARIAN
+        function periksaKelulusan() {
+            const input = document.getElementById('nisnInput').value.trim();
+            const boxHasil = document.getElementById('boxHasil');
+            const boxError = document.getElementById('boxError');
+
+            // Reset Tampilan
+            boxHasil.style.display = 'none';
+            boxError.style.display = 'none';
+
+            if(input === "") {
+                alert("Mohon masukkan NISN terlebih dahulu!");
+                return;
+            }
+
+            // Cari data di database array
+            const dataSiswa = databaseSiswa.find(siswa => siswa.nisn === input);
+
+            if(dataSiswa) {
+                // Tampilkan Identitas
+                document.getElementById('txtNama').innerText = dataSiswa.nama;
+                document.getElementById('txtNisn').innerText = dataSiswa.nisn;
+
+                // Atur Pesan Ucapan & Warna Box Status
+                const statusDiv = document.getElementById('statusKelulusan');
+                if(dataSiswa.status === "LULUS") {
+                    statusDiv.className = "status lulus";
+                    statusDiv.innerHTML = "🎉 SELAMAT! 🎉<br>Anda Dinyatakan LULUS dari Satuan Pendidikan.";
+                } else {
+                    statusDiv.className = "status tidak-lulus";
+                    statusDiv.innerHTML = "STATUS: DITUNDA<br>Silakan hubungi Wali Kelas atau pihak sekolah.";
+                }
+
+                // Munculkan hasil ke layar
+                boxHasil.style.display = 'block';
+            } else {
+                // Jika NISN salah/tidak ada
+                boxError.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
